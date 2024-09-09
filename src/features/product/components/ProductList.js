@@ -1,7 +1,7 @@
 import React, { useState, Fragment, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { ChevronLeftIcon, ChevronRightIcon, StarIcon } from '@heroicons/react/20/solid'
-import { fetchAllProductsAsync, selectAllProducts } from '../ProductListSlice';
+import { fetchAllProductsAsync,fetchProductsByFiltersAsync, selectAllProducts } from '../ProductSlice';
 import {
   Dialog,
   DialogBackdrop,
@@ -26,53 +26,56 @@ const sortOptions = [
   ]
   const filters = [
     {
-      id: 'color',
-      name: 'Color',
+      id: 'brand',
+      name: 'brands',
       options: [
-        { value: 'white', label: 'White', checked: false },
-        { value: 'beige', label: 'Beige', checked: false },
-        { value: 'blue', label: 'Blue', checked: true },
-        { value: 'brown', label: 'Brown', checked: false },
-        { value: 'green', label: 'Green', checked: false },
-        { value: 'purple', label: 'Purple', checked: false },
+        { value: 'Essence', label: 'Essence', checked: false },
+        { value: 'Glamour Beauty', label: 'Glamour Beauty', checked: false },
+        { value: 'Velvet Touch', label: 'Velvet Touch', checked: true },
+        { value: 'Chic Cosmetics', label: 'Chic Cosmetics', checked: false },
+        { value: 'Nail Couture', label: 'Nail Couture', checked: false },
+        { value: 'Chanel', label: 'Chanel', checked: false },
+        { value: 'Dior', label: 'Dior', checked: false },
+        { value: 'Dolce & Gabbana', label: 'Dolce & Gabbana', checked: false },
+        { value: 'Gucci', label: 'Gucci', checked: false },
+        { value: 'Annibale Colombo', label: 'Annibale Colombo', checked: false },
+        { value: 'Furniture Co.', label: 'Furniture Co.', checked: false },
+        { value: 'Knoll', label: 'Knoll', checked: false },
+        { value: 'Bath Trends', label: 'Bath Trends', checked: false },
+        { value: 'Essence', label: 'Essence', checked: false },
+        
       ],
     },
     {
       id: 'category',
       name: 'Category',
       options: [
-        { value: 'new-arrivals', label: 'New Arrivals', checked: false },
-        { value: 'sale', label: 'Sale', checked: false },
-        { value: 'travel', label: 'Travel', checked: true },
-        { value: 'organization', label: 'Organization', checked: false },
-        { value: 'accessories', label: 'Accessories', checked: false },
+        { value: 'beauty', label: 'beauty', checked: false },
+        { value: 'fragrances', label: 'fragrances', checked: false },
+        { value: 'furniture', label: 'furniture', checked: false },
+        { value: 'groceries', label: 'groceries', checked: false },
       ],
     },
-    {
-      id: 'size',
-      name: 'Size',
-      options: [
-        { value: '2l', label: '2L', checked: false },
-        { value: '6l', label: '6L', checked: false },
-        { value: '12l', label: '12L', checked: false },
-        { value: '18l', label: '18L', checked: false },
-        { value: '20l', label: '20L', checked: false },
-        { value: '40l', label: '40L', checked: true },
-      ],
-    },
+    
   ]
   
   function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
   }
 
-
-
-
 export default function ProductList() {
   const dispatch = useDispatch();
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
   const products = useSelector(selectAllProducts)
+  const [filter, setFilter] = useState({});
+
+  const handleFilter = (e,section, option) => {
+    const newFilter = {...filter,[section.id]:option.value};
+    setFilter(newFilter)
+    dispatch(fetchProductsByFiltersAsync(newFilter))
+    console.log(section.id, option.value);
+     
+  }
 
   useEffect(() => {
     dispatch(fetchAllProductsAsync())
@@ -226,11 +229,12 @@ return (
                         {section.options.map((option, optionIdx) => (
                           <div key={option.value} className="flex items-center">
                             <input
-                              defaultValue={option.value}
-                              defaultChecked={option.checked}
                               id={`filter-${section.id}-${optionIdx}`}
                               name={`${section.id}[]`}
+                              defaultValue={option.value}
                               type="checkbox"
+                              defaultChecked={option.checked}
+                              onChange={e=>handleFilter(e,section,option)}
                               className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                             />
                             <label htmlFor={`filter-${section.id}-${optionIdx}`} className="ml-3 text-sm text-gray-600">
