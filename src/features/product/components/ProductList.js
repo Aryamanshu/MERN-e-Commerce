@@ -7,8 +7,12 @@ import {
 } from "@heroicons/react/20/solid";
 import {
   fetchAllProductsAsync,
+  fetchBrandsAsync,
+  fetchCategoriesAsync,
   fetchProductsByFiltersAsync,
   selectAllProducts,
+  selectBrands,
+  selectCategories,
   selectTotalItems,
 } from "../ProductSlice";
 import {
@@ -33,43 +37,12 @@ import {
 } from "@heroicons/react/20/solid";
 import { Link } from "react-router-dom";
 import { ITEMS_PER_PAGE } from "../../../app/constants";
+import { fetchBrands } from "../ProductAPI";
 
 const sortOptions = [
   { name: "Best Rating", sort: "-rating", current: false },
   { name: "Price: Low to High", sort: "price", current: false },
   { name: "Price: High to Low", sort: "-price", current: false },
-];
-const filters = [
-  {
-    id: "brand",
-    name: "brands",
-    options: [
-      { value: "Essence", label: "Essence", checked: false },
-      { value: "Glamour Beauty", label: "Glamour Beauty", checked: false },
-      { value: "Velvet Touch", label: "Velvet Touch", checked: true },
-      { value: "Chic Cosmetics", label: "Chic Cosmetics", checked: false },
-      { value: "Nail Couture", label: "Nail Couture", checked: false },
-      { value: "Chanel", label: "Chanel", checked: false },
-      { value: "Dior", label: "Dior", checked: false },
-      { value: "Dolce & Gabbana", label: "Dolce & Gabbana", checked: false },
-      { value: "Gucci", label: "Gucci", checked: false },
-      { value: "Annibale Colombo", label: "Annibale Colombo", checked: false },
-      { value: "Furniture Co.", label: "Furniture Co.", checked: false },
-      { value: "Knoll", label: "Knoll", checked: false },
-      { value: "Bath Trends", label: "Bath Trends", checked: false },
-      { value: "Essence", label: "Essence", checked: false },
-    ],
-  },
-  {
-    id: "category",
-    name: "Category",
-    options: [
-      { value: "beauty", label: "beauty", checked: false },
-      { value: "fragrances", label: "fragrances", checked: false },
-      { value: "furniture", label: "furniture", checked: false },
-      { value: "groceries", label: "groceries", checked: false },
-    ],
-  },
 ];
 
 function classNames(...classes) {
@@ -78,14 +51,28 @@ function classNames(...classes) {
 
 export default function ProductList() {
   const dispatch = useDispatch();
-  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const products = useSelector(selectAllProducts);
+  const brands = useSelector(selectBrands);
+  const categories = useSelector(selectCategories);
   const totalItems = useSelector(selectTotalItems);
+  const filters = [
+    {
+      id: "brand",
+      name: "brands",
+      options: brands,
+    },
+    {
+      id: "category",
+      name: "Category",
+      options: categories,
+    },
+  ];
+
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [filter, setFilter] = useState({});
   const [sort, setSort] = useState({});
   const [page, setPage] = useState(1);
   // console.log(page, typeof(page));
-  
 
   const handleFilter = (e, section, option) => {
     //TODO: on server it will support mutple categories
@@ -129,6 +116,11 @@ export default function ProductList() {
     setPage(1);
   }, [totalItems, sort]);
 
+  useEffect(() => {
+    dispatch(fetchBrandsAsync());
+    dispatch(fetchCategoriesAsync());
+  }, []);
+
   return (
     <div>
       <div>
@@ -139,6 +131,7 @@ export default function ProductList() {
               handleFilter={handleFilter}
               mobileFiltersOpen={mobileFiltersOpen}
               setMobileFiltersOpen={setMobileFiltersOpen}
+              filters={filters}
             ></MobileFilter>
 
             <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -291,6 +284,7 @@ function MobileFilter({
   mobileFiltersOpen,
   setMobileFiltersOpen,
   handleFilter,
+  filters,
 }) {
   return (
     <Dialog
@@ -321,14 +315,17 @@ function MobileFilter({
           </div>
 
           {/* Filters */}
-          <DesktopFilter handleFilter={handleFilter}></DesktopFilter>
+          <DesktopFilter
+            handleFilter={handleFilter}
+            filters={filters}
+          ></DesktopFilter>
         </DialogPanel>
       </div>
     </Dialog>
   );
 }
 
-function DesktopFilter({ handleFilter }) {
+function DesktopFilter({ handleFilter, filters }) {
   return (
     <form className="mt-4 border-t border-gray-200">
       {filters.map((section) => (
@@ -380,9 +377,10 @@ function DesktopFilter({ handleFilter }) {
   );
 }
 
-function Pagination({page, setPage, handlePage, totalItems}) {
+function Pagination({ page, setPage, handlePage, totalItems }) {
   // console.log(page);
-  
+const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+
   return (
     <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
       <div className="flex flex-1 justify-between sm:hidden">
@@ -402,18 +400,16 @@ function Pagination({page, setPage, handlePage, totalItems}) {
       <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
         <div>
           <p className="text-sm text-gray-700">
-            Showing{' '}
+            Showing{" "}
             <span className="font-medium">
               {(page - 1) * ITEMS_PER_PAGE + 1}
-            </span>{' '}
-            to{' '}
+            </span>{" "}
+            to{" "}
             <span className="font-medium">
-               {page * ITEMS_PER_PAGE > totalItems
+              {page * ITEMS_PER_PAGE > totalItems
                 ? totalItems
-                : page * ITEMS_PER_PAGE
-                 }
-                
-            </span>{' '}
+                : page * ITEMS_PER_PAGE}
+            </span>{" "}
             of <span className="font-medium">{totalItems}</span> results
           </p>
         </div>
@@ -422,15 +418,15 @@ function Pagination({page, setPage, handlePage, totalItems}) {
             aria-label="Pagination"
             className="isolate inline-flex -space-x-px rounded-md shadow-sm"
           >
-            <a
-              href="#"
+            <div
+              onClick={(e) => handlePage(page > 1 ? page - 1 : page)}
               className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
             >
               <span className="sr-only"> Previous </span>
               <ChevronLeftIcon aria-hidden="true" className="h-5 w-5" />
-            </a>
+            </div>
             {/* Current: "z-10 bg-indigo-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600", Default: "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0" */}
-            {Array.from({ length: Math.ceil(totalItems / ITEMS_PER_PAGE) }).map(
+            {Array.from({ length: totalPages }).map(
               (el, index) => (
                 <div
                   onClick={(e) => handlePage(index + 1)}
@@ -446,13 +442,13 @@ function Pagination({page, setPage, handlePage, totalItems}) {
               )
             )}
 
-            <a
-              href="#"
+            <div
+              onClick={(e) => handlePage(page < totalPages ? page + 1 : page)}
               className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
             >
               <span className="sr-only">Next</span>
               <ChevronRightIcon aria-hidden="true" className="h-5 w-5" />
-            </a>
+            </div>
           </nav>
         </div>
       </div>
