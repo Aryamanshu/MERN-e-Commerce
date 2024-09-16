@@ -14,6 +14,7 @@ import {
 } from "../features/auth/authSlice";
 import { createOrderAsync } from "../features/order/orderSlice";
 import { selectCurrentOrder } from "../features/order/orderSlice";
+import { selectUserInfo } from "../features/user/userSlice";
 
 function Checkout() {
   const dispatch = useDispatch();
@@ -25,7 +26,7 @@ function Checkout() {
     formState: { errors },
   } = useForm();
 
-  const user = useSelector(selectLoggedInUser);
+  const user = useSelector(selectUserInfo);
 
   const [open, setOpen] = useState(true);
 
