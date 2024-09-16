@@ -4,15 +4,16 @@ import {
   deleteItemFromCartAsync,
   selectItems,
   updateCartAsync,
-  
 } from "../features/cart/cartSlice";
 import { Link } from "react-router-dom";
 import { Navigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { selectLoggedInUser, updateUserAsync } from "../features/auth/authSlice";
+import {
+  selectLoggedInUser,
+  updateUserAsync,
+} from "../features/auth/authSlice";
 import { createOrderAsync } from "../features/order/orderSlice";
-
-
+import { selectCurrentOrder } from "../features/order/orderSlice";
 
 function Checkout() {
   const dispatch = useDispatch();
@@ -29,14 +30,15 @@ function Checkout() {
   const [open, setOpen] = useState(true);
 
   const items = useSelector(selectItems);
+  const currentOrder = useSelector(selectCurrentOrder);
   const totlaAmount = items.reduce(
     (amount, item) => item.price * item.quantity + amount,
     0
   );
   const totlaItems = items.reduce((total, item) => item.quantity + total, 0);
 
-  const [selectedAddress,  setSelectedAddress] = useState(null);
-  const [paymentMethod,  setPaymentMethod] = useState('cash');
+  const [selectedAddress, setSelectedAddress] = useState(null);
+  const [paymentMethod, setPaymentMethod] = useState("cash");
 
   const handleQuantity = (e, item) => {
     dispatch(updateCartAsync({ ...item, quantity: +e.target.value }));
@@ -46,26 +48,42 @@ function Checkout() {
     dispatch(deleteItemFromCartAsync(id));
   };
 
-  const handleAddress = (e)=> {
+  const handleAddress = (e) => {
     console.log(e.target.value);
     setSelectedAddress(user.addresses[e.target.value]);
-    
   };
 
-  const handlePayment = (e)=> {
+  const handlePayment = (e) => {
     console.log(e.target.value);
     setPaymentMethod(e.target.value);
-     
   };
 
-  const handleOrder = (e)=> {
-    const order = {items, totlaAmount, totlaItems, user, paymentMethod, selectedAddress}
-    dispatch(createOrderAsync(order))
-  }
+  const handleOrder = (e) => {
+    const order = {
+      items,
+      totlaAmount,
+      totlaItems,
+      user,
+      paymentMethod,
+      selectedAddress,
+      status: "pending", // other status can be delivered , recieved.
+    };
+    dispatch(createOrderAsync(order));
+  };
+
+  //TODO : Redirect to order-success page
+  //TODO : clear cart after order
+  //TODO : on server change the stock number of items
 
   return (
     <>
       {!items.length && <Navigate to="/" replace={true}></Navigate>}
+      {currentOrder && (
+        <Navigate
+          to={`/order-success/${currentOrder.id}`}
+          replace={true}
+        ></Navigate>
+      )}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-5">
           <div className="lg:col-span-3">
@@ -74,9 +92,12 @@ function Checkout() {
               noValidate
               onSubmit={handleSubmit((data) => {
                 console.log(data);
-                
+
                 dispatch(
-                  updateUserAsync({...user, addresses:[...user.addresses, data]})
+                  updateUserAsync({
+                    ...user,
+                    addresses: [...user.addresses, data],
+                  })
                 );
                 reset();
                 console.log(data);
@@ -140,7 +161,7 @@ function Checkout() {
                         Phone
                       </label>
                       <div class="mt-2">
-                      <input
+                        <input
                           id="phone"
                           {...register("phone", {
                             required: "phone is required",
@@ -257,14 +278,14 @@ function Checkout() {
                   </p>
 
                   <ul role="list" className="divide-y divide-gray-100">
-                    {user.addresses.map((address,index) => (
+                    {user.addresses.map((address, index) => (
                       <li
                         key={index}
                         className="flex justify-between gap-x-6 px-5 py-5 border-solid border-3 border-gray-200 "
                       >
                         <div className="flex  gap-x-4">
                           <input
-                          onChange={handleAddress}
+                            onChange={handleAddress}
                             name="address"
                             type="radio"
                             value={index}
@@ -419,7 +440,7 @@ function Checkout() {
               <div className="border-t border-gray-200 px-2 py-6 sm:px-2">
                 <div className="flex justify-between my-2 text-base font-medium text-gray-900">
                   <p>Subtotal</p>
-                  <p>$ {totlaAmount}</p>
+                  <p>$ {Math.floor(totlaAmount)}</p>
                 </div>
                 <div className="flex justify-between my-2 text-base font-medium text-gray-900">
                   <p>Total Items in Cart</p>

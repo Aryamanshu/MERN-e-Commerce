@@ -44,3 +44,15 @@ export function deleteItemFromCart(itemId) {
     resolve({ data:{id:itemId} });
   });
 }
+
+export function resetCart(userId) {
+  // get all the items of user's cart wali api and delete each
+  return new Promise(async (resolve) => {
+  const response = await fetchItemsByUserId(userId);
+ const items = response.data;
+ for(let item of items) {
+  await deleteItemFromCart(item.id)
+ }
+ resolve({status:'success'})
+});
+}

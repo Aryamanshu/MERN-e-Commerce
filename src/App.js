@@ -20,40 +20,68 @@ import ProductDetailsPage from './pages/ProductDetailsPage';
 import Protected from './features/auth/components/Protected';
 import { fetchItemsByUserIdAsync } from './features/cart/cartSlice';
 import { useDispatch } from 'react-redux';
+import PageNotFound from './pages/404';
+import OrderSuccessPage from './pages/orderSuccessPage';
+import UserOrders from './features/user/compponents/userOrders';
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Protected>
+    element: (<Protected>
       <Home></Home>
-    </Protected>,
+    </Protected>),
   },
   {
     path: "/login",
-    element: <LoginPage></LoginPage>,
+    element: (<LoginPage></LoginPage>),
   },
   {
     path: "/signup",
-    element: <SignUpPage></SignUpPage>,
+    element: (<SignUpPage></SignUpPage>),
   },
   {
     path: "/cart",
-    element: <Protected>
+    element: (<Protected>
       <CartPage></CartPage>
-    </Protected>,
+    </Protected>),
   },
   {
-    path: "checkout",
-    element: <Protected>
+    path: "/checkout",
+    element: (<Protected>
       <Checkout></Checkout>
-      </Protected>,
+      </Protected>),
   },
   {
     path: "product-details/:id",
-    element: <Protected>
+    element: (<Protected>
       <ProductDetailsPage></ProductDetailsPage>
-    </Protected>
+    </Protected>)
   },
+  
+  {
+    path: "*",
+    element: (
+      <PageNotFound></PageNotFound>
+    )
+  },
+  {
+    path: "/order-Success/:id",
+    element: (
+      <OrderSuccessPage></OrderSuccessPage>
+    )
+  },
+  {
+    path: "*",
+    element: (
+      <PageNotFound></PageNotFound>
+    )
+  },
+  {
+    path: "/orders",
+    element: (
+      <UserOrders></UserOrders>
+    )
+  }
 ]);
 
 
