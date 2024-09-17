@@ -17,16 +17,21 @@ import {
 
 import ProductDetailsPage from "./pages/ProductDetailsPage";
 import Protected from "./features/auth/components/Protected";
+import ProtectedAdmin from './features/auth/components/ProtectedAdmin'
 import { fetchItemsByUserIdAsync } from "./features/cart/cartSlice";
 import { useDispatch } from "react-redux";
 import PageNotFound from "./pages/404";
 import OrderSuccessPage from "./pages/orderSuccessPage";
 import UserOrderPage from "./pages/UserOrderPage,";
 import UserProfilePage from "./pages/UserProfilePage";
-
+import AdminProductDetailsPage from "./pages/AdminProductDetailsPage";
 import { fetchLoggedInUserAsync } from "./features/user/userSlice";
 
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import AdminHome from "./pages/AdminHome";
+import LogOut from "./features/auth/components/logout";
+
+import AdminProductFormPage from "./pages/AdminProductFormPage";
 
 const router = createBrowserRouter([
   {
@@ -35,6 +40,14 @@ const router = createBrowserRouter([
       <Protected>
         <Home></Home>
       </Protected>
+    ),
+  },
+  {
+    path: "/admin",
+    element: (
+      <ProtectedAdmin>
+        <AdminHome></AdminHome>
+      </ProtectedAdmin>
     ),
   },
   {
@@ -53,6 +66,7 @@ const router = createBrowserRouter([
       </Protected>
     ),
   },
+  
   {
     path: "/checkout",
     element: (
@@ -69,7 +83,30 @@ const router = createBrowserRouter([
       </Protected>
     ),
   },
-
+  {
+    path: "/admin/product-details/:id",
+    element: (
+      <ProtectedAdmin>
+        <AdminProductDetailsPage></AdminProductDetailsPage>
+      </ProtectedAdmin>
+    ),
+  },
+  {
+    path: "/admin/product-form",
+    element: (
+      <ProtectedAdmin>
+        <AdminProductFormPage></AdminProductFormPage>
+      </ProtectedAdmin>
+    ),
+  },
+  {
+    path: "/admin/product-form/edit/:id",
+    element: (
+      <ProtectedAdmin>
+        <AdminProductFormPage></AdminProductFormPage>
+      </ProtectedAdmin>
+    ),
+  },
   {
     path: "*",
     element: <PageNotFound></PageNotFound>,
@@ -85,6 +122,10 @@ const router = createBrowserRouter([
   {
     path: "/orders",
     element: <UserOrderPage></UserOrderPage>,
+  },
+  {
+    path: '/logout',
+    element: <LogOut></LogOut>,
   },
   {
     path: "/profile",

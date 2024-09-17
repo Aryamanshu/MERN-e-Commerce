@@ -15,12 +15,11 @@ export default function Signup() {
     formState: { errors },
   } = useForm();
 
-  
   console.log(errors);
 
   return (
     <>
-    {user && <Navigate to="/" replace={true}></Navigate>}
+      {user && <Navigate to="/" replace={true}></Navigate>}
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <img
@@ -38,7 +37,15 @@ export default function Signup() {
             noValidate
             className="space-y-6"
             onSubmit={handleSubmit((data) => {
-              dispatch(createUserAsync({email: data.email, passowrd: data.password, addresses: []}))
+              dispatch(
+                createUserAsync({
+                  email: data.email,
+                  passowrd: data.password,
+                  addresses: [],
+                  role:'user'
+                  //TODO: THIS ROLE CAN BE GIVEN AT BACKEND
+                })
+              );
               console.log(data);
             })}
           >
@@ -77,8 +84,8 @@ export default function Signup() {
                   Password
                 </label>
                 <div className="text-sm">
-                <Link
-                   to='/forgot-password'
+                  <Link
+                    to="/forgot-password"
                     className="font-semibold text-indigo-600 hover:text-indigo-500"
                   >
                     Forgot password?
@@ -122,7 +129,8 @@ export default function Signup() {
                   id="confirmPassword"
                   {...register("confirmPassword", {
                     required: "confirm password is required",
-                    validate: (value, formValues) => value === formValues.password || 'passsword not matching'
+                    validate: (value, formValues) =>
+                      value === formValues.password || "passsword not matching",
                   })}
                   type="password"
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
