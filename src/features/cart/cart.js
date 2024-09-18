@@ -16,6 +16,7 @@ import {
   Select,
 } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { discountedPrice } from "../../app/constants";
 
 export default function Cart() {
   const dispatch = useDispatch();

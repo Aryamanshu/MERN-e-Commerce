@@ -4,8 +4,10 @@ import { Radio, RadioGroup } from "@headlessui/react";
 import { useSelector, useDispatch } from "react-redux";
 import { selectProductById, fetchProductByIdAsync } from "../ProductSlice";
 import { useParams } from "react-router-dom";
-import { addToCartAsync } from "../../cart/cartSlice";
+import { addToCartAsync, selectItems } from "../../cart/cartSlice";
 import { selectLoggedInUser } from "../../auth/authSlice";
+import { discountedPrice } from "../../../app/constants";
+import { useAlert } from "react-alert";
 
 const colors = [
   { name: "White", class: "bg-white", selectedClass: "ring-gray-400" },
@@ -39,15 +41,27 @@ export default function ProductDetails() {
   const [selectedColor, setSelectedColor] = useState(colors[0]);
   const [selectedSize, setSelectedSize] = useState(sizes[2]);
   const user = useSelector(selectLoggedInUser);
+  const items = useSelector(selectItems);
   const product = useSelector(selectProductById);
   const dispatch = useDispatch();
   const params = useParams();
+  const alert = useAlert();
 
-  const handleCart = (e)=>{
+  const handleCart = (e) => {
     e.preventDefault();
-    const newItem = { ...product, quantity: 1, user: user.id }
-    delete newItem['id'];
-    dispatch(addToCartAsync(newItem));
+    if (items.findIndex((item) => item.productId === product.id) < 0) {
+      const newItem = {
+        ...product,
+        productId: product.id,
+        quantity: 1,
+        user: user.id,
+      };
+      delete newItem["id"];
+      dispatch(addToCartAsync(newItem));
+      //TODO: it will be based on server response of backend
+      alert.success("Item addedd to Cart");
+    } else 
+    alert.error("Item already Added");
   };
 
   useEffect(() => {
@@ -143,8 +157,11 @@ export default function ProductDetails() {
             {/* Options */}
             <div className="mt-4 lg:row-span-3 lg:mt-0">
               <h2 className="sr-only">Product information</h2>
-              <p className="text-3xl tracking-tight text-gray-900">
-                ${product.price}
+              <p className="text-4xl block font-medium text-gray-900">
+                $
+                {Math.round(
+                  product.price * (1 - product.discountPercentage / 100)
+                )}
               </p>
 
               {/* Reviews */}
@@ -273,7 +290,9 @@ export default function ProductDetails() {
                 >
                   Add to Cart
                 </button>
-               </form>
+                
+              </form>
+              
             </div>
 
             <div className="py-10 lg:col-span-2 lg:col-start-1 lg:border-r lg:border-gray-200 lg:pb-16 lg:pr-8 lg:pt-6">

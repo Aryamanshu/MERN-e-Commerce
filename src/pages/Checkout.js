@@ -15,6 +15,7 @@ import {
 import { createOrderAsync } from "../features/order/orderSlice";
 import { selectCurrentOrder } from "../features/order/orderSlice";
 import { selectUserInfo } from "../features/user/userSlice";
+import { discountedPrice } from "../app/constants";
 
 function Checkout() {
   const dispatch = useDispatch();

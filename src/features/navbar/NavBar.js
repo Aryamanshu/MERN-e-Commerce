@@ -19,9 +19,10 @@ import { selectLoggedInUser } from "../auth/authSlice";
 
 
 const navigation = [
-  { name: "Dashboard", link: "#", user: true },
-  { name: "Team", link: "#", user: true },
-  { name: "Admin", link: "/admin", admin: true },
+  { name: "Products", link: "/", user: true },
+  
+  { name: "Admin-Products", link: "/admin", admin: true },
+  { name: "Orders", link: "/admin/orders", admin: true },
 ];
 const userNavigation = [
   { name: "My Profile", link: "/profile" },
@@ -47,7 +48,7 @@ function NavBar({ children }) {
                   <Link to="/">
                     <img
                       alt="Your Company"
-                      src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
+                      src="/ecommerce.png"
                       className="h-8 w-8"
                     />
                   </Link>
