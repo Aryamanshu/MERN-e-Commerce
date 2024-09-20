@@ -20,6 +20,7 @@ import {
 } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { discountedPrice } from "../../app/constants";
+import Modal from "../common/Modal";
 
 export default function Cart() {
   const dispatch = useDispatch();
@@ -28,6 +29,7 @@ export default function Cart() {
 
   const items = useSelector(selectItems);
   const status = useSelector(selectCartStatus);
+  const [openModal, setOpenModal] = useState(null)
   const totlaAmount = items.reduce(
     (amount, item) => item.price * item.quantity + amount,
     0
@@ -40,6 +42,7 @@ export default function Cart() {
 
   const handleRemove = (e, id) => {
     dispatch(deleteItemFromCartAsync(id));
+
     alert.error("Item Removed");
   };
 
@@ -54,18 +57,18 @@ export default function Cart() {
           </h1>
           <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
             <div className="flow-root">
-            {status === "loading" ? (
-            <Grid
-              visible={true}
-              height="120"
-              width="120"
-              color="rgb(79, 70,229)"
-              ariaLabel="grid-loading"
-              radius="12.5"
-              wrapperStyle={{}}
-              wrapperClass="grid-wrapper"
-            />
-          ) : null}
+              {status === "loading" ? (
+                <Grid
+                  visible={true}
+                  height="120"
+                  width="120"
+                  color="rgb(79, 70,229)"
+                  ariaLabel="grid-loading"
+                  radius="12.5"
+                  wrapperStyle={{}}
+                  wrapperClass="grid-wrapper"
+                />
+              ) : null}
               <ul role="list" className="-my-6 divide-y divide-gray-200">
                 {items.map((item) => (
                   <li key={item.id} className="flex py-6">
@@ -110,8 +113,17 @@ export default function Cart() {
                         </div>
 
                         <div className="flex">
+                          <Modal
+                            title={`Delete ${item.title}`}
+                            message="Are you sure you want to delete this Cart item ?"
+                            dangerOption="DELETE"
+                            cancelOption="Cancel"
+                            dangerAction={(e) => handleRemove(e, item.id)}
+                            cancelAction={()=>setOpenModal(null)}
+                            showModal={openModal === item.id}
+                          ></Modal>
                           <button
-                            onClick={(e) => handleRemove(e, item.id)}
+                            onClick={e => {setOpenModal(item.id)}}
                             type="button"
                             className="font-medium text-indigo-600 hover:text-indigo-500"
                           >

@@ -143,7 +143,9 @@ export const productSlice = createSlice({
           }
         } else {
           state.products = [action.payload];
+          
         }
+        state.selectedProduct = action.payload;
       });
   },
 });
