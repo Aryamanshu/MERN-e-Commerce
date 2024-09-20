@@ -2,12 +2,13 @@ import React, { useState, useEffect } from "react";
 import { StarIcon } from "@heroicons/react/20/solid";
 import { Radio, RadioGroup } from "@headlessui/react";
 import { useSelector, useDispatch } from "react-redux";
-import { selectProductById, fetchProductByIdAsync } from "../ProductSlice";
+import { selectProductById, fetchProductByIdAsync, selectProductListStatus } from "../ProductSlice";
 import { useParams } from "react-router-dom";
 import { addToCartAsync, selectItems } from "../../cart/cartSlice";
 import { selectLoggedInUser } from "../../auth/authSlice";
 import { discountedPrice } from "../../../app/constants";
 import { useAlert } from "react-alert";
+import { Grid } from "react-loader-spinner";
 
 const colors = [
   { name: "White", class: "bg-white", selectedClass: "ring-gray-400" },
@@ -46,6 +47,7 @@ export default function ProductDetails() {
   const dispatch = useDispatch();
   const params = useParams();
   const alert = useAlert();
+  const status = useSelector(selectProductListStatus);
 
   const handleCart = (e) => {
     e.preventDefault();
@@ -70,6 +72,18 @@ export default function ProductDetails() {
 
   return (
     <div className="bg-white">
+       {status === "loading" ? (
+            <Grid
+              visible={true}
+              height="100"
+              width="100"
+              color="rgb(79, 70,229)"
+              ariaLabel="grid-loading"
+              radius="12.5"
+              wrapperStyle={{}}
+              wrapperClass="grid-wrapper"
+            />
+          ) : null}
       {product && (
         <div className="pt-6">
           <nav aria-label="Breadcrumb">

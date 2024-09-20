@@ -2,11 +2,14 @@ import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   deleteItemFromCartAsync,
+  selectCartStatus,
   selectItems,
   updateCartAsync,
 } from "./cartSlice";
 import { Link } from "react-router-dom";
 import { Navigate } from "react-router-dom";
+import { useAlert } from "react-alert";
+import { Grid } from "react-loader-spinner";
 
 import {
   Dialog,
@@ -21,8 +24,10 @@ import { discountedPrice } from "../../app/constants";
 export default function Cart() {
   const dispatch = useDispatch();
   const [open, setOpen] = useState(true);
+  const alert = useAlert();
 
   const items = useSelector(selectItems);
+  const status = useSelector(selectCartStatus);
   const totlaAmount = items.reduce(
     (amount, item) => item.price * item.quantity + amount,
     0
@@ -35,6 +40,7 @@ export default function Cart() {
 
   const handleRemove = (e, id) => {
     dispatch(deleteItemFromCartAsync(id));
+    alert.error("Item Removed");
   };
 
   return (
@@ -48,6 +54,18 @@ export default function Cart() {
           </h1>
           <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
             <div className="flow-root">
+            {status === "loading" ? (
+            <Grid
+              visible={true}
+              height="120"
+              width="120"
+              color="rgb(79, 70,229)"
+              ariaLabel="grid-loading"
+              radius="12.5"
+              wrapperStyle={{}}
+              wrapperClass="grid-wrapper"
+            />
+          ) : null}
               <ul role="list" className="-my-6 divide-y divide-gray-200">
                 {items.map((item) => (
                   <li key={item.id} className="flex py-6">

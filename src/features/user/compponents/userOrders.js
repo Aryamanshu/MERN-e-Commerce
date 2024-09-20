@@ -15,7 +15,7 @@ export default function UserOrders() {
 
   return (
     <div>
-      {orders.map((order) => (
+      {orders.map  ((order) => (
         <div>
           <div>
             <div className="mx-auto mt-12  bg-white max-w-7xl px-4 sm:px-6 lg:px-8">
