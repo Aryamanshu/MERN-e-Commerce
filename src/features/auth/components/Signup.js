@@ -40,7 +40,7 @@ export default function Signup() {
               dispatch(
                 createUserAsync({
                   email: data.email,
-                  passowrd: data.password,
+                  password: data.password,
                   addresses: [],
                   role:'user'
                   //TODO: THIS ROLE CAN BE GIVEN AT BACKEND
