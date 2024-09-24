@@ -6,7 +6,7 @@ import SignUpPage from "./pages/SignupPage";
 import CartPage from "./pages/cartPage";
 import Checkout from "./pages/Checkout";
 import { useSelector } from "react-redux";
-import { selectLoggedInUser } from "./features/auth/authSlice";
+import { selectLoggedInUser, selectUserChecked, checkAuthAsync } from "./features/auth/authSlice";
 
 import {
   createBrowserRouter,
@@ -36,6 +36,7 @@ import AdminOrdersPage from "./pages/AdminOrdersPage";
 import { positions, Provider } from "react-alert";
 import AlertTemplate from "react-alert-template-basic";
 import { fetchItemsByUserIdAsync } from "./features/cart/cartSlice";
+
 
 const options = {
   timeout: 5000,
@@ -157,8 +158,15 @@ const router = createBrowserRouter([
 function App() {
   const dispatch = useDispatch();
   const user = useSelector(selectLoggedInUser);
+  const userChecked = useSelector(selectUserChecked);
+
+  useEffect(()=> {
+    dispatch(checkAuthAsync())
+  }, [])
+  
 
   useEffect(() => {
+    
     if (user) {
       dispatch(fetchItemsByUserIdAsync());
       dispatch(fetchLoggedInUserAsync());
@@ -166,11 +174,13 @@ function App() {
   }, [dispatch, user]);
 
   return (
+    <>
     <div className="App">
-      <Provider template={AlertTemplate} {...options}>
+      {userChecked && <Provider template={AlertTemplate} {...options}>
       <RouterProvider router={router} />
-      </Provider>
+      </Provider>}
     </div>
+    </>
   );
 }
 
