@@ -9,7 +9,7 @@ export default function UserOrders() {
   const dispatch = useDispatch();
   const userInfo = useSelector(selectUserInfo);
   const orders = useSelector(selectUserOrders);
-  const totalAmount = orders?.totalAmount || 0;
+  
 
 
 

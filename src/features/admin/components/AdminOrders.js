@@ -83,7 +83,7 @@ function AdminOrders() {
                       })
                     }
                   >
-                    Order{" "}
+                    Order#{" "}
                     {sort._sort === "id" &&
                       (sort._order === "asc" ? (
                         <ArrowUpIcon className="w-4 h-4 inline"></ArrowUpIcon>
@@ -129,37 +129,32 @@ function AdminOrders() {
                           <div className="mr-2">
                             <img
                               className="w-6 h-6 rounded-full"
-                              src={item.thumbnail}
+                              src={item.product.thumbnail}
+                              
                             />
                           </div>
                           <span>
                             {item.title} - #{item.quantity} - $
-                            {item.price}
+                            {item.product.price}
                           </span>
                         </div>
                       ))}
                     </td>
                     <td className="py-3 px-6 text-center">
-                      <div className="flex items-center text-red-600 justify-center">
+                      <div className="flex items-center justify-center">
                         ${order.totalAmount}
                       </div>
                     </td>
                     <td className="py-3 px-6 text-center">
                       <div className="">
-                        {order.selectedAddress ? (
-                          <>
-                            <div>
-                              <strong>{order.selectedAddress.name}</strong>,
-                            </div>
-                            <div>{order.selectedAddress.street},</div>
-                            <div>{order.selectedAddress.city}, </div>
-                            <div>{order.selectedAddress.state}, </div>
-                            <div>{order.selectedAddress.pinCode}, </div>
-                            <div>{order.selectedAddress.phone}, </div>
-                          </>
-                        ) : (
-                          <div>No address available</div> // Or any other appropriate message
-                        )}
+                        <div>
+                          <strong>{order.selectedAddress.name}</strong>,
+                        </div>
+                        <div>{order.selectedAddress.street},</div>
+                        <div>{order.selectedAddress.city}, </div>
+                        <div>{order.selectedAddress.state}, </div>
+                        <div>{order.selectedAddress.pinCode}, </div>
+                        <div>{order.selectedAddress.phone}, </div>
                       </div>
                     </td>
                     <td className="py-3 px-6 text-center">
