@@ -1,27 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { selectLoggedInUser } from "../../auth/authSlice";
-import { fetchLoggedInUserOrdersAsync, selectUserInfo, selectUserOrders } from "../userSlice";
+import { fetchLoggedInUserOrdersAsync, selectUserInfo, selectUserInfoStatus, selectUserOrders } from "../userSlice";
+import { Grid } from "react-loader-spinner";
 
 
 
 export default function UserOrders() {
   const dispatch = useDispatch();
-  const userInfo = useSelector(selectUserInfo);
   const orders = useSelector(selectUserOrders);
+  const status = useSelector(selectUserInfoStatus);
   
-
-
-
   useEffect(() => {
-    dispatch(fetchLoggedInUserOrdersAsync(userInfo.id));
-  }, []);
+    dispatch(fetchLoggedInUserOrdersAsync());
+  }, [dispatch]);
   
 
 
   return (
     <div>
-      {orders.map  ((order) => (
+      {orders && orders.map((order) => (
         <div key={order.id}>
           <div>
             <div className="mx-auto mt-12  bg-white max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -115,6 +113,18 @@ export default function UserOrders() {
           </div>
         </div>
       ))}
+       {status === "loading" ? (
+            <Grid
+              visible={true}
+              height="100"
+              width="100"
+              color="rgb(79, 70,229)"
+              ariaLabel="grid-loading"
+              radius="12.5"
+              wrapperStyle={{}}
+              wrapperClass="grid-wrapper"
+            />
+          ) : null}
     </div>
   );
 }  

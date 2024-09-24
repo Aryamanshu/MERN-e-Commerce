@@ -35,6 +35,7 @@ import AdminProductFormPage from "./pages/AdminProductFormPage";
 import AdminOrdersPage from "./pages/AdminOrdersPage";
 import { positions, Provider } from "react-alert";
 import AlertTemplate from "react-alert-template-basic";
+import { fetchItemsByUserIdAsync } from "./features/cart/cartSlice";
 
 const options = {
   timeout: 5000,
@@ -159,8 +160,8 @@ function App() {
 
   useEffect(() => {
     if (user) {
-      
-      dispatch(fetchLoggedInUserAsync(user.id));
+      dispatch(fetchItemsByUserIdAsync());
+      dispatch(fetchLoggedInUserAsync());
     }
   }, [dispatch, user]);
 
