@@ -28,6 +28,7 @@ function ProductForm() {
   const params = useParams();
   const selectedProduct = useSelector(selectProductById);
   const [openModal, setOpenModal] = useState(null);
+  const alert = useAlert();
 
   useEffect(() => {
     if (params.id) {
@@ -85,9 +86,11 @@ function ProductForm() {
             product.id = params.id;
             product.rating = selectedProduct.rating || 0;
             dispatch(updateProductAsync(product));
+            alert.success('Product updated')
             reset();
           } else {
             dispatch(createProductAsync(product));
+            alert.success('Product created')
             reset();
             //TODO:  on product successfully added clear fields and show a message
           }
