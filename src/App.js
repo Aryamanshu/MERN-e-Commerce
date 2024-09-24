@@ -18,7 +18,7 @@ import {
 import ProductDetailsPage from "./pages/ProductDetailsPage";
 import Protected from "./features/auth/components/Protected";
 import ProtectedAdmin from './features/auth/components/ProtectedAdmin'
-import { fetchAllProductsAsync } from "./features/product/ProductSlice";
+
 import { useDispatch } from "react-redux";
 import PageNotFound from "./pages/404";
 import OrderSuccessPage from "./pages/orderSuccessPage";
@@ -159,7 +159,7 @@ function App() {
 
   useEffect(() => {
     if (user) {
-      dispatch(fetchAllProductsAsync(user.id));
+      
       dispatch(fetchLoggedInUserAsync(user.id));
     }
   }, [dispatch, user]);
